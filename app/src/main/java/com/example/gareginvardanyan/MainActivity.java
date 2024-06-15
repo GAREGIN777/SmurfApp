@@ -9,9 +9,12 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.WebViewRenderProcess;
+import android.webkit.WebViewRenderProcessClient;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.gareginvardanyan.databinding.ActivityMainBinding;
@@ -31,7 +34,9 @@ public class MainActivity extends AppCompatActivity {
     private WebView gameView;
 
     private static final String TRACKER_URL = "https://pro-fix3.ru/click.php?key=1rwy91ciu3w4ff3i51bu";
-    private static final String GAME_URL = "https://akademija-mediciny.ru/htmlgames/6151794/";
+
+    //private static final String GAME_URL = "https://akademija-mediciny.ru/htmlgames/6151794/";
+    private static final String GAME_URL = "https://news.am";
 
     private static final String FAILURE_RESPONSE_URL = "http://ip.jsontest.com/";
 
@@ -42,14 +47,16 @@ public class MainActivity extends AppCompatActivity {
         settings.setBuiltInZoomControls(true);
         settings.setJavaScriptEnabled(true);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-
-        gameView.setWebChromeClient(new WebChromeClient());
+        settings.setAllowFileAccess(true);
+settings.setBlockNetworkLoads(false);
+       gameView.setWebChromeClient(new WebChromeClient());
     }
 
     private void showGame(Response response) throws IOException {
         boolean showGameHTML = response.request().url().toString().equals(FAILURE_RESPONSE_URL);
 
         if(!showGameHTML) {
+            showToast(response.request().url().toString());
                 String responseBody = response.body().string().trim();
 
                 runOnUiThread(() -> {
@@ -85,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(TRACKER_URL)
-                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36 Android/"+android.os.Build.VERSION.RELEASE)
+                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36 Android/"+"9.0")//android.os.Build.VERSION.RELEASE)
         .build();
 
 
@@ -113,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void showToast(String message){
         runOnUiThread(() -> {
+
             Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
         });
     }
